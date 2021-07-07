@@ -1,6 +1,6 @@
-change history
+## change history
 -------------------
-Please keep in mind that this list may not accurate.
+### Please keep in mind that this list may not be accurate.
 -------------------
 
 - 0.5.6 2021-07-07  

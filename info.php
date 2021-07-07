@@ -13,7 +13,7 @@
 $module_directory   = "timebased_picker";
 $module_name        = "Timebased Picker";
 $module_function    = "page";
-$module_version     = "0.5.6";
+$module_version     = "0.5.7";
 $module_platform    = "4.3.0";
 $module_author      = "Ruud Eisinga, Evaki, Dietrich Roland Pehlke (last)";
 $module_license     = "GNU General Public License";

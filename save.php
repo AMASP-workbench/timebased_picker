@@ -33,8 +33,8 @@ if (defined('LEPTON_PATH')) {
 }
 
 /**
- *	Include WB admin wrapper script
- *	Tells script to update when this page was last updated
+ *  Include WB admin wrapper script
+ *  Tells script to update when this page was last updated
  */
 $update_when_modified = true;
 require(WB_PATH.'/modules/admin.php');
@@ -45,17 +45,14 @@ if ( false === $admin->get_permission('start') )
     die();
 }
 
-/**
- *  Update fields
- */
-// [1]
+// [1] prepare
 $_POST['target_section_id']     = $_POST['target_section_id_'.$section_id] ?? 0;
 $_POST['head_section_id']       = $_POST['head_section_id_'.$section_id] ?? 0;
 $_POST['inactive_section_id']   = $_POST['inactive_section_id_'.$section_id] ?? 0;
 $_POST['weekdays'] = (isset($_POST['weekdays']) ? implode(",", $_POST['weekdays']) : "");
 
-// [2]
-$fields = array(
+// [2] set up the "input" test array
+$aLookUpKeys = array(
     'target_section_id'     => ["type" => "int",    "default" => 0],
     'head_section_id'       => ["type" => "int",    "default" => 0],
     'inactive_section_id'   => ["type" => "int",    "default" => 0],
@@ -65,11 +62,10 @@ $fields = array(
     'time_zone'             => ["type" => "string", "default" => DEFAULT_TIMEZONE_STRING]
 );
 
-// [3]
-$oREQUEST = LEPTON_request::getInstance();
-$aPostedFields = $oREQUEST->testPostValues( $fields );
+// [3] - Test the "input"
+$aPostedFields = LEPTON_request::getInstance()->testPostValues( $aLookUpKeys );
 
-// [4]
+// [4] -  Get db-instance and execute update
 $database = LEPTON_database::getinstance();
 
 $database->build_and_execute(
@@ -79,10 +75,7 @@ $database->build_and_execute(
     "`section_id`=".$section_id
 );
 
-// [5]
-/**
- *  Check if there is a database error, otherwise say successful
- */
+// [5] Check if there is a database error, otherwise say successful
 if($database->is_error()) {
     $admin->print_error($database->get_error(), $js_back);
 } else {

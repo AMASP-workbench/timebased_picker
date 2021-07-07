@@ -11,9 +11,9 @@
  */
  
 /**
- *	prevent this file from being accessed directly
+ *  prevent this file from being accessed directly
  */
-if(!defined('WB_PATH'))
+if(!defined('LEPTON_PATH'))
 {
     header('Location: ../../index.php');
     die();
@@ -27,29 +27,28 @@ if (!function_exists("build_pagelist2")) {
         
         $query_section_id = [];
         LEPTON_database::getInstance()->execute_query(
-            "SELECT s.section_id,s.module,p.link,p.page_title,p.page_id,p.level 
+            "SELECT s.section_id, s.module, s.name, p.link, p.page_title, p.page_id, p.level 
                 FROM ".$table_s." s 
-                join ".$table_p." p 
-                on (s.page_id = p.page_id) 
+                JOIN ".$table_p." p 
+                ON (s.page_id = p.page_id) 
                 WHERE p.parent = ".$parent." 
-                order by p.position",
+                ORDER BY p.position, s.position",
             true,
             $query_section_id,
             true
         );
 
-
         foreach($query_section_id as $res)
         {
             if ($res['page_id'] != $this_page)
             {
-                $links[$res['section_id']] = $res['section_id'].'|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section: '.$res['module'];
+                $links[$res['section_id']] = $res['section_id'].'|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section: '.$res['module']." :: ".$res['name'];
             } else {
-                $links[$res['section_id']] = '|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section:'.$res['module'];
+                $links[$res['section_id']] = '|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section:'.$res['module']." :: ".$res['name'];
             }
             
             build_pagelist2( $res['page_id'], $this_page, $links);
         }
-        
+
     }
 }
