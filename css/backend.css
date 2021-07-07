@@ -30,8 +30,12 @@ select.timebased_picker {
 	margin-left: 0px;
 }
 
-.timebased_picker {
+table.timebased_picker {
     border: 0;
+    margin-left:23px;
+    margin-bottom: 23px;
+    table-layout: fixed;
+    border-spacing: 10px;
 }
 
 td.first {

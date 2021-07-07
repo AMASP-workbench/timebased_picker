@@ -19,17 +19,17 @@ if(!defined('WB_PATH'))
     die();
 }
 
-/**
- *	Load Language file
- */
-$lang = (dirname(__FILE__))."/languages/". LANGUAGE .".php";
-require_once ( !file_exists($lang) ? (dirname(__FILE__))."/languages/EN.php" : $lang );
+$MOD_TIMEBASED_PICKER = timebased_picker\classes\TimebasedPicker::getInstance()->language;
 
 require_once ('select_pages.php');
 
-$table = TABLE_PREFIX.'mod_timebased_picker';
-$sql_result = $database->query("SELECT * FROM `".$table."` WHERE `section_id` = '".$section_id."'");
-$sql_row = $sql_result->fetchRow( MYSQLI_ASSOC );
+$sql_row = [];
+LEPTON_database::getInstance()->execute_query(
+    "SELECT * FROM `".TABLE_PREFIX."mod_timebased_picker` WHERE `section_id` = '".$section_id."'",
+    true,
+    $sql_row,
+    false
+);
 
 $target_section_id = $sql_row['target_section_id'];
 $sel = ' selected="selected"';
@@ -65,7 +65,7 @@ foreach($t as $item) {
 	$s = ($item == $sql_row['time_start']) ? $sel : "";
 	$time_start_select .= $option_start.($item < 10 ? "0" : "").$item."' ".$s.">".$item.":00 ".$MOD_TIMEBASED_PICKER['TIME_HOUR_NAME'].$option_end;
 	
-	$s = ($item == $sql_row['time_end']) ? " selected='selected'" : "";
+	$s = ($item == $sql_row['time_end']) ? $sel : "";
 	$time_end_select .= $option_start.($item < 10 ? "0" : "").$item."' ".$s.">".$item.":00 ".$MOD_TIMEBASED_PICKER['TIME_HOUR_NAME'].$option_end;
 }
 $time_start_select .= $select_end;
@@ -123,7 +123,7 @@ $leptoken_tag = ($leptoken=== NULL)
     : "\n<input type='hidden' name='leptoken' value='".$leptoken."' />\n"
     ;  
 ?>
-<form name="select_section<?php echo $section_id; ?>" action="<?php echo WB_URL ?>/modules/timebased_picker/save.php" method="post">
+<form class="ui form" name="select_section<?php echo $section_id; ?>" action="<?php echo WB_URL ?>/modules/timebased_picker/save.php" method="post">
 <input type="hidden" name="page_id" value="<?php echo $page_id ?>" />
 <input type="hidden" name="section_id" value="<?php echo $section_id ?>" />
 <?php echo $ftan_tag."\n".$leptoken_tag; ?>
@@ -197,15 +197,15 @@ $leptoken_tag = ($leptoken=== NULL)
 	</tr>
 </table>
 <p></p>
-<table aria-describedby="basic actions">
+<table class="timebased_picker" aria-describedby="basic actions">
     <tr>
         <th class="first" scope="col"></th>
         <th scope="col"></th>
     </tr>
 
 	<tr>
-		<td class="first"><input type="submit" value="<?php echo $TEXT['SAVE'] ?>" style="width: 100px; margin-top: 5px;" /></td>
-		<td ><input type="button" value="<?php echo $TEXT['CANCEL'] ?>" onclick="javascript: window.location='index.php';" style="width: 100px; margin-top: 5px;" /></td>
+		<td class="first"><input class="ui button green" type="submit" value="<?php echo $TEXT['SAVE'] ?>" style="width: 100px; margin-top: 5px;" /></td>
+		<td ><input class="ui button red" type="button" value="<?php echo $TEXT['CANCEL'] ?>" onclick="javascript: window.location='index.php';" style="width: 100px; margin-top: 5px;" /></td>
 	</tr>
 </table>
 </form>

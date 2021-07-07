@@ -9,8 +9,23 @@
  *  @requirements   PHP >= 7.3
  *
  */
- 
-require_once('../../config.php');
+
+if (defined('LEPTON_PATH')) {	
+	include(LEPTON_PATH.'/framework/class.secure.php'); 
+} else {
+	$oneback = "../";
+	$root = $oneback;
+	$level = 1;
+	while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
+		$root .= $oneback;
+		$level += 1;
+	}
+	if (file_exists($root.'/framework/class.secure.php')) { 
+		include($root.'/framework/class.secure.php'); 
+	} else {
+		trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+	}
+}
 
 /**
  *	Include WB admin wrapper script
@@ -26,42 +41,45 @@ if ( false === $admin->get_permission('start') )
 }
 
 /**
- *	Update fields
+ *  Update fields
  */
-if(isset($_POST['target_section_id_'.$section_id])) {
+// [1]
+$_POST['target_section_id']     = $_POST['target_section_id_'.$section_id] ?? 0;
+$_POST['head_section_id']       = $_POST['head_section_id_'.$section_id] ?? 0;
+$_POST['inactive_section_id']   = $_POST['inactive_section_id_'.$section_id] ?? 0;
+$_POST['weekdays'] = (isset($_POST['weekdays']) ? implode(",", $_POST['weekdays']) : "");
 
-	$table_mod = TABLE_PREFIX.'mod_timebased_picker';
-	
-	$fields = array(
-		'target_section_id'		=> $admin->add_slashes($_POST['target_section_id_'.$section_id]),
-		'head_section_id'		=> $admin->add_slashes($_POST['head_section_id_'.$section_id]),
-		'inactive_section_id'	=> $admin->add_slashes($_POST['inactive_section_id_'.$section_id]),
-		'weekdays'	=> (isset($_POST['weekdays'])) ? implode(",", $_POST['weekdays'] ) : "",
-		'time_start'		=> $admin->add_slashes($_POST['time_start']),
-		'time_end' 			=> $admin->add_slashes($_POST['time_end']),
-		'time_zone'			=> $admin->add_slashes($_POST['time_zone'])
-	);
-	
-	$query = "UPDATE `".$table_mod."` SET ";
-	foreach($fields as $key => $value)
-	{
-	    $query .= "`".$key."`='".$value."',";
-	}
-	$query = substr( $query, 0, -1)." WHERE section_id =".$section_id;
-	
-	$database->query( $query );
-}
+// [2]
+$fields = array(
+    'target_section_id'     => ["type" => "int",    "default" => 0],
+    'head_section_id'       => ["type" => "int",    "default" => 0],
+    'inactive_section_id'   => ["type" => "int",    "default" => 0],
+    'weekdays'              => ["type" => "string", "default" => ""],
+    'time_start'            => ["type" => "string", "default" => 0],
+    'time_end'              => ["type" => "string", "default" => 0],
+    'time_zone'             => ["type" => "string", "default" => DEFAULT_TIMEZONE_STRING]
+);
 
+// [3]
+$oREQUEST = LEPTON_request::getInstance();
+$aPostedFields = $oREQUEST->testPostValues( $fields );
+
+// [4]
+$database = LEPTON_database::getinstance();
+
+$database->build_and_execute(
+    "update",
+    TABLE_PREFIX.'mod_timebased_picker',
+    $aPostedFields,
+    "`section_id`=".$section_id
+);
+
+// [5]
 /**
- *	Check if there is a database error, otherwise say successful
+ *  Check if there is a database error, otherwise say successful
  */
 if($database->is_error()) {
-	$admin->print_error($database->get_error(), $js_back);
+    $admin->print_error($database->get_error(), $js_back);
 } else {
-	$admin->print_success($MESSAGE['PAGES_SAVED'], ADMIN_URL.'/pages/modify.php?page_id='.$page_id);
+    $admin->print_success($MESSAGE['PAGES_SAVED'], ADMIN_URL.'/pages/modify.php?page_id='.$page_id);
 }
-
-/**
-*	Print admin footer
-*/
-$admin->print_footer();

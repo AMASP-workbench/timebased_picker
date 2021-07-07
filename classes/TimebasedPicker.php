@@ -12,30 +12,39 @@
 
 namespace timebased_picker\classes;
 
-class TimebasedPicker
+class TimebasedPicker extends \LEPTON_abstract
 {
 
-	private $db = NULL;
+    static public $instance = NULL;
+    
+    public function initialize()
+    {
+        // required by parent
+    }	
 	
-	public function __construct(&$db_handel) {
-	
-		$this->db = $db_handel;
+	public function print_section( &$aSection_id=0 )
+	{
 		
-	}
-	
-	public function print_section( &$aSection_id=0 ) {
 		global $section_id;
+		
 		global $database;
 		global $wb;
 		global $TEXT;
 		global $HEADING;
 		
-		$query_sec = $this->db->query("SELECT `section_id`,`module` FROM `".TABLE_PREFIX."sections` WHERE `section_id` = '".$aSection_id."'");
+		\LEPTON_database::getinstance()->execute_query(
+		    "SELECT `section_id`,`module` 
+		        FROM `".TABLE_PREFIX."sections` 
+		        WHERE `section_id` = '".$aSection_id."'",
+		    true,
+		    $section,
+		    false
+		);
 
-        $sBasePath = WB_PATH.'/modules/';
+        $sBasePath = LEPTON_PATH.'/modules/';
         
-		if($query_sec->numRows() > 0) {
-			$section = $query_sec->fetchRow( MYSQLI_ASSOC );
+		if(count($section) > 0)
+		{
 			$old_section_id = $section_id;
 			$section_id = $section['section_id']; 
 			$module = $section['module'];
@@ -55,7 +64,7 @@ class TimebasedPicker
 			 */
 			$temp_path = $sBasePath.$module.'/frontend.js';
 			if (file_exists($temp_path)) {
-				echo "\n<script src=\"".WB_URL."/modules/".$module."/frontend.js\" type=\"text/javascript\"></script>\n";
+				echo "\n<script src=\"".$sBasePath.$module."/frontend.js\" type=\"text/javascript\"></script>\n";
 			}
 	
 			require $sBasePath.$module.'/view.php';
