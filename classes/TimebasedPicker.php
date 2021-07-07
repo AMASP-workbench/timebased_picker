@@ -138,10 +138,8 @@ class TimebasedPicker extends \LEPTON_abstract
         {
             foreach($aLookUpFields as $iTempPlace)
             {
-                if($ref[ $iTempPlace ] == 0)
+                if($ref[ $iTempPlace ] > 0)
                 {
-                    continue;
-                } else {
                     $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
                     
                     if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
@@ -215,10 +213,8 @@ class TimebasedPicker extends \LEPTON_abstract
         {
             foreach($aLookUpFields as $iTempPlace)
             {
-                if($ref[ $iTempPlace ] == 0)
+                if($ref[ $iTempPlace ] > 0)
                 {
-                    continue;
-                } else {
                     $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
                     
                     if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
