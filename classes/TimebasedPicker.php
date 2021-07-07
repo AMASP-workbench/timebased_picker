@@ -26,7 +26,9 @@ class TimebasedPicker extends \LEPTON_abstract
         'frontend'  => [
             'js'  => []
         ]];
-        
+    
+    const LEPTON_MODULE_DIR = LEPTON_PATH.'/modules/';
+       
     /**
      *  Own instance of this class
      *  @access public
@@ -67,7 +69,7 @@ class TimebasedPicker extends \LEPTON_abstract
 		    false
 		);
 
-        $sBasePath = LEPTON_PATH.'/modules/';
+        $sBasePath = self::LEPTON_MODULE_DIR;
         
 		if(!empty($section))
 		{
@@ -146,7 +148,7 @@ class TimebasedPicker extends \LEPTON_abstract
                     {
                         $aLoaded[] = $module;
                         
-                        $sTempPath = LEPTON_PATH."/modules/".$module."/headers.inc.php";
+                        $sTempPath = self::LEPTON_MODULE_DIR.$module."/headers.inc.php";
                         if(file_exists( $sTempPath ))
                         {
                             $mod_headers = [];
@@ -223,7 +225,7 @@ class TimebasedPicker extends \LEPTON_abstract
                     {
                         $aLoaded[] = $module;
                         
-                        $sTempPath = LEPTON_PATH."/modules/".$module."/footers.inc.php";
+                        $sTempPath = self::LEPTON_MODULE_DIR.$module."/footers.inc.php";
                         if(file_exists( $sTempPath ))
                         {
                             $mod_footers = [];
