@@ -1,13 +1,13 @@
 ## Timebased section-picker
 
-A timebased section-picker (e.g. for the german act 'JMStV (§§ 8 ff. JMStV)') page-module for WBCE.  
+A timebased section-picker (e.g. for the german act 'JMStV (§§ 8 ff. JMStV)') page-module for [LEPTON CMS][1].  
 Based on module 'section_picker' of Ruud Eisinga.  
 
 ### require
-- [WBCE CMS][1], Version > 1.4
+- [LEPTON CMS][1], Version > 4.1
 - PHP >= 7.3 (tested with 8)
 
 ### license
 GNU General Public License
 
-[1]: https://wbce.org/de/wbce/ "WBCE CMS"  
+[1]: https://lepton-cms.org/english/home.php "LEPTON CMS"  
