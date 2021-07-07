@@ -1,0 +1,41 @@
+/**
+ *	Backend.css of module: jmstv_picker
+ *
+ *
+ */
+ 
+#time_start, #time_end, #time_zone {
+	width: 200px;
+	margin-top: 5px;
+}
+
+#time_zone {
+	margin-bottom: 5px;
+}
+
+select.timebased_picker {
+	font-family:monospace;
+	width:500px;
+	height: 20px;
+	margin-top:1px;
+	margin-bottom:3px;
+}
+
+.tbp {
+	margin-left: 10px;
+	margin-bottom: 5px;
+}
+
+.tbp:first-child {
+	margin-left: 0px;
+}
+
+.timebased_picker {
+    border: 0;
+}
+
+td.first {
+    display: block;
+    min-width: 220px;
+    vertical-align: middle;
+}
