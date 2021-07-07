@@ -28,6 +28,8 @@ class TimebasedPicker extends \LEPTON_abstract
         ]];
     
     const LEPTON_MODULE_DIR = LEPTON_PATH.'/modules/';
+    
+    public $aModules = [];
        
     /**
      *  Own instance of this class
@@ -101,12 +103,46 @@ class TimebasedPicker extends \LEPTON_abstract
 		}
 	}
 
+    protected function getModules()
+    {
+        $database = \LEPTON_database::getInstance();
+        
+        $aAllInfos = [];
+        
+        $database->execute_query(
+            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
+                FROM `".(self::TABLENAME)."` as m 
+                WHERE m.`page_id`=".PAGE_ID,
+            true,
+            $aAllInfos,
+            true
+        );
+
+        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
+        
+        $this->aModules = [];
+        foreach($aAllInfos as $ref)
+        {
+            foreach($aLookUpFields as $field)
+            {
+                if($ref[ $field ] != 0)
+                {
+                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $field ]);
+                    if( ( $module !== NULL ) && (!in_array($module, $this->aModules)) )
+                    {
+                        $this->aModules[] = $module;
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      *  Get the frontend css and js files of the involved modules.
      *
      *  @return array   The complete list for the $mod_header's 
      */
-    static function resolveFrontenendHeaderFiles() : array
+    public function resolveFrontenendHeaderFiles() : array
     {
         global $mod_headers;
         
@@ -117,57 +153,29 @@ class TimebasedPicker extends \LEPTON_abstract
             return $aReturnValues;
         }
         
-        $database = \LEPTON_database::getInstance();
+        $this->getModules();
         
-        $aAllModules = [];
-        
-        $database->execute_query(
-            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
-                FROM `".(self::TABLENAME)."` as m 
-                WHERE m.`page_id`=".PAGE_ID,
-            true,
-            $aAllModules,
-            true
-        );
-
-        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
-        
-        $aLoaded = [];
-        
-        foreach($aAllModules as &$ref)
+        foreach($this->aModules as &$module)
         {
-            foreach($aLookUpFields as $iTempPlace)
+            $sTempPath = self::LEPTON_MODULE_DIR.$module."/headers.inc.php";
+            if(file_exists( $sTempPath ))
             {
-                if($ref[ $iTempPlace ] > 0)
+                $mod_headers = [];
+                require $sTempPath;
+                
+                if(isset($mod_headers['frontend']['css']))
                 {
-                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
-                    
-                    if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
+                    foreach($mod_headers['frontend']['css'] as $aTemp)
                     {
-                        $aLoaded[] = $module;
-                        
-                        $sTempPath = self::LEPTON_MODULE_DIR.$module."/headers.inc.php";
-                        if(file_exists( $sTempPath ))
-                        {
-                            $mod_headers = [];
-                            require $sTempPath;
-                            
-                            if(isset($mod_headers['frontend']['css']))
-                            {
-                                foreach($mod_headers['frontend']['css'] as $aTemp)
-                                {
-                                    $aReturnValues['frontend']['css'][] = $aTemp;
-                                }
-                            }
-                            
-                            if(isset($mod_headers['frontend']['js']))
-                            {
-                                foreach($mod_headers['frontend']['js'] as $aTemp)
-                                {
-                                    $aReturnValues['frontend']['js'][] = $aTemp;
-                                }
-                            }
-                        }
+                        $aReturnValues['frontend']['css'][] = $aTemp;
+                    }
+                }
+                
+                if(isset($mod_headers['frontend']['js']))
+                {
+                    foreach($mod_headers['frontend']['js'] as $aTemp)
+                    {
+                        $aReturnValues['frontend']['js'][] = $aTemp;
                     }
                 }
             }        
@@ -181,7 +189,7 @@ class TimebasedPicker extends \LEPTON_abstract
      *
      *  @return array   The complete list for the $mod_footers's 
      */
-    static function resolveFrontenendFooterFiles() : array
+    public function resolveFrontenendFooterFiles() : array
     {
         global $mod_footers;
         
@@ -192,55 +200,25 @@ class TimebasedPicker extends \LEPTON_abstract
             return $aReturnValues;
         }
         
-        $database = \LEPTON_database::getInstance();
-        
-        $aAllModules = [];
-        
-        $database->execute_query(
-            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
-                FROM `".(self::TABLENAME)."` as m 
-                WHERE m.`page_id`=".PAGE_ID,
-            true,
-            $aAllModules,
-            true
-        );
-
-        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
-        
-        $aLoaded = [];
-        
-        foreach($aAllModules as &$ref)
+        foreach($this->aModules as &$module)
         {
-            foreach($aLookUpFields as $iTempPlace)
+            $sTempPath = self::LEPTON_MODULE_DIR.$module."/footers.inc.php";
+            if(file_exists( $sTempPath ))
             {
-                if($ref[ $iTempPlace ] > 0)
-                {
-                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
-                    
-                    if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
-                    {
-                        $aLoaded[] = $module;
-                        
-                        $sTempPath = self::LEPTON_MODULE_DIR.$module."/footers.inc.php";
-                        if(file_exists( $sTempPath ))
-                        {
-                            $mod_footers = [];
+                $mod_footers = [];
 
-                            require $sTempPath;
-                            
-                            // Keep in mind that there are no css files resolved in footers!
-                            
-                            if(isset($mod_footers['frontend']['js']))
-                            {
-                                foreach($mod_footers['frontend']['js'] as $aTemp)
-                                {
-                                    $aReturnValues['frontend']['js'][] = $aTemp;
-                                }
-                            }
-                        }
+                require $sTempPath;
+                
+                // Keep in mind that there are no css files resolved in footers!
+                
+                if(isset($mod_footers['frontend']['js']))
+                {
+                    foreach($mod_footers['frontend']['js'] as $aTemp)
+                    {
+                        $aReturnValues['frontend']['js'][] = $aTemp;
                     }
                 }
-            }        
+            }
         }
         
         return $aReturnValues;

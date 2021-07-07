@@ -10,7 +10,7 @@
  *
  */
 
-$mod_headers = timebased_picker\classes\TimebasedPicker::resolveFrontenendHeaderFiles();
+$mod_headers = timebased_picker\classes\TimebasedPicker::getInstance()->resolveFrontenendHeaderFiles();
 
 $mod_headers["frontend"]["css"][] = [
     "media" => "all",
