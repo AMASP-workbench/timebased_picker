@@ -26,6 +26,7 @@ class TimebasedPicker extends \LEPTON_abstract
 	{
 		
 		global $section_id;
+		global $page_id;
 		
 		global $database;
 		global $wb;

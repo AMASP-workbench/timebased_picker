@@ -23,14 +23,22 @@ global $s_view;
 
 $table_mod = TABLE_PREFIX.'mod_timebased_picker';
 
-$query_result = $database->query("SELECT `target_section_id`,`head_section_id`,`inactive_section_id`,`time_start`,`time_end`,`time_zone`,`weekdays` FROM `".$table_mod."` WHERE `section_id` ='".$section_id."'");
+$section_info = [];
+$database->execute_query(
+    "SELECT `target_section_id`,`head_section_id`,`inactive_section_id`,`time_start`,`time_end`,`time_zone`,`weekdays` 
+        FROM `".$table_mod."` 
+        WHERE `section_id` ='".$section_id."'",
+    true,
+    $section_info,
+    false
+);
 
-if ( (!$query_result) || ($database->is_error())) {
+if ( empty($section_info) || ($database->is_error()))
+{
 	echo $database->get_error();
 	return 0;
 }
 
-$section_info = $query_result->fetchRow( MYSQLI_ASSOC );
 $new_section_id = $section_info['target_section_id'];
 
 $old_timezone = date_default_timezone_get();
