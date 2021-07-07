@@ -16,7 +16,7 @@ if(!defined("LEPTON_SEC_PATH"))
 }
 
 if (defined('LEPTON_PATH')) {    
-    include(LEPTON_PATH.LEPTON_SEC_PATH); 
+    include LEPTON_PATH.LEPTON_SEC_PATH; 
 } else {
     $oneback = "../";
     $root = $oneback;
@@ -26,18 +26,18 @@ if (defined('LEPTON_PATH')) {
         $level += 1;
     }
     if (file_exists($root.LEPTON_SEC_PATH)) { 
-        include($root.LEPTON_SEC_PATH); 
+        include $root.LEPTON_SEC_PATH; 
     } else {
         trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
     }
 }
 
 /**
- *  Include WB admin wrapper script
+ *  Include LEPTON admin wrapper script
  *  Tells script to update when this page was last updated
  */
 $update_when_modified = true;
-require(WB_PATH.'/modules/admin.php');
+require(LEPTON_PATH.'/modules/admin.php');
 
 if ( false === $admin->get_permission('start') ) 
 {

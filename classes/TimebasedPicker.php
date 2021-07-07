@@ -14,15 +14,40 @@ namespace timebased_picker\classes;
 
 class TimebasedPicker extends \LEPTON_abstract
 {
-
+    const TABLENAME = TABLE_PREFIX."mod_timebased_picker";
+    
+    const FRONTEND_HEADERS = [
+        'frontend'  => [
+            'css' => [],
+            'js'  => []
+        ]];
+        
+    const FRONTEND_FOOTERS = [
+        'frontend'  => [
+            'js'  => []
+        ]];
+        
+    /**
+     *  Own instance of this class
+     *  @access public
+     */
     static public $instance = NULL;
     
+    /**
+     *  Required by parent class.
+     */
     public function initialize()
     {
         // required by parent
     }	
 	
-	public function print_section( &$aSection_id=0 )
+	/**
+	 *  Makes a "wild" echo output of the given section to the browser.
+	 *  
+	 *  @param int $aSection_id A valid section id. Pass|Call by reference!
+	 *
+	 */
+	public function print_section( int &$aSection_id=0 )
 	{
 		
 		global $section_id;
@@ -74,4 +99,152 @@ class TimebasedPicker extends \LEPTON_abstract
 		}
 	}
 
+    /**
+     *  Get the frontend css and js files of the involved modules.
+     *
+     *  @return array   The complete list for the $mod_header's 
+     */
+    static function resolveFrontenendHeaderFiles() : array
+    {
+        global $mod_headers;
+        
+        $aReturnValues = self::FRONTEND_HEADERS;
+        
+        if(!defined("PAGE_ID"))
+        {
+            return $aReturnValues;
+        }
+        
+        $database = \LEPTON_database::getInstance();
+        
+        $aAllModules = [];
+        
+        $database->execute_query(
+            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
+                FROM `".(self::TABLENAME)."` as m 
+                WHERE m.`page_id`=".PAGE_ID,
+            true,
+            $aAllModules,
+            true
+        );
+
+        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
+        
+        $aLoaded = [];
+        
+        foreach($aAllModules as &$ref)
+        {
+            foreach($aLookUpFields as $iTempPlace)
+            {
+                if($ref[ $iTempPlace ] == 0)
+                {
+                    continue;
+                } else {
+                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
+                    
+                    if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
+                    {
+                        $aLoaded[] = $module;
+                        
+                        $sTempPath = LEPTON_PATH."/modules/".$module."/headers.inc.php";
+                        if(file_exists( $sTempPath ))
+                        {
+                            $mod_headers = [];
+                            require $sTempPath;
+                            
+                            if(isset($mod_headers['frontend']['css']))
+                            {
+                                foreach($mod_headers['frontend']['css'] as $aTemp)
+                                {
+                                    $aReturnValues['frontend']['css'][] = $aTemp;
+                                }
+                            }
+                            
+                            if(isset($mod_headers['frontend']['js']))
+                            {
+                                foreach($mod_headers['frontend']['js'] as $aTemp)
+                                {
+                                    $aReturnValues['frontend']['js'][] = $aTemp;
+                                }
+                            }
+                        }
+                    }
+                }
+            }        
+        }
+        
+        return $aReturnValues;
+    }
+    
+    /**
+     *  Get the frontend css and js files of the involved modules.
+     *
+     *  @return array   The complete list for the $mod_footers's 
+     */
+    static function resolveFrontenendFooterFiles() : array
+    {
+        global $mod_footers;
+        
+        $aReturnValues = self::FRONTEND_FOOTERS;
+        
+        if(!defined("PAGE_ID"))
+        {
+            return $aReturnValues;
+        }
+        
+        $database = \LEPTON_database::getInstance();
+        
+        $aAllModules = [];
+        
+        $database->execute_query(
+            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
+                FROM `".(self::TABLENAME)."` as m 
+                WHERE m.`page_id`=".PAGE_ID,
+            true,
+            $aAllModules,
+            true
+        );
+
+        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
+        
+        $aLoaded = [];
+        
+        foreach($aAllModules as &$ref)
+        {
+            foreach($aLookUpFields as $iTempPlace)
+            {
+                if($ref[ $iTempPlace ] == 0)
+                {
+                    continue;
+                } else {
+                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $iTempPlace ]);
+                    
+                    if( ( NULL !== $module ) && ( !in_array($module, $aLoaded ) ) )
+                    {
+                        $aLoaded[] = $module;
+                        
+                        $sTempPath = LEPTON_PATH."/modules/".$module."/footers.inc.php";
+                        if(file_exists( $sTempPath ))
+                        {
+                            $mod_footers = [];
+
+                            require $sTempPath;
+                            
+                            // Keep in mind that there are no css files resolved in footers!
+                            
+                            if(isset($mod_footers['frontend']['js']))
+                            {
+                                foreach($mod_footers['frontend']['js'] as $aTemp)
+                                {
+                                    $aReturnValues['frontend']['js'][] = $aTemp;
+                                }
+                            }
+                        }
+                    }
+                }
+            }        
+        }
+        
+        return $aReturnValues;
+    }
 }
