@@ -29,6 +29,9 @@ class TimebasedPicker extends \LEPTON_abstract
     
     const LEPTON_MODULE_DIR = LEPTON_PATH.'/modules/';
     
+    /**
+     *  Storage for the module-names (== directories)
+     */
     public $aModules = [];
        
     /**
@@ -109,28 +112,31 @@ class TimebasedPicker extends \LEPTON_abstract
         
         $aAllInfos = [];
         
-        $database->execute_query(
-            "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
-                FROM `".(self::TABLENAME)."` as m 
-                WHERE m.`page_id`=".PAGE_ID,
-            true,
-            $aAllInfos,
-            true
-        );
-
-        $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
-        
-        $this->aModules = [];
-        foreach($aAllInfos as $ref)
+        if(defined("PAGE_ID"))
         {
-            foreach($aLookUpFields as $field)
+            $database->execute_query(
+                "SELECT m.`page_id`, m.`section_id`, m.`target_section_id`, m.`head_section_id`, m.`inactive_section_id` 
+                    FROM `".(self::TABLENAME)."` as m 
+                    WHERE m.`page_id`=".PAGE_ID,
+                true,
+                $aAllInfos,
+                true
+            );
+
+            $aLookUpFields = ['target_section_id', 'head_section_id', 'inactive_section_id'];
+        
+            $this->aModules = [];
+            foreach($aAllInfos as $ref)
             {
-                if($ref[ $field ] != 0)
+                foreach($aLookUpFields as $field)
                 {
-                    $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $field ]);
-                    if( ( $module !== NULL ) && (!in_array($module, $this->aModules)) )
+                    if($ref[ $field ] != 0)
                     {
-                        $this->aModules[] = $module;
+                        $module = $database->get_one("SELECT `module` FROM `".TABLE_PREFIX."sections` where `section_id` = ".$ref[ $field ]);
+                        if( ( $module !== NULL ) && (!in_array($module, $this->aModules)) )
+                        {
+                            $this->aModules[] = $module;
+                        }
                     }
                 }
             }
@@ -147,12 +153,7 @@ class TimebasedPicker extends \LEPTON_abstract
         global $mod_headers;
         
         $aReturnValues = self::FRONTEND_HEADERS;
-        
-        if(!defined("PAGE_ID"))
-        {
-            return $aReturnValues;
-        }
-        
+
         $this->getModules();
         
         foreach($this->aModules as &$module)
@@ -194,12 +195,7 @@ class TimebasedPicker extends \LEPTON_abstract
         global $mod_footers;
         
         $aReturnValues = self::FRONTEND_FOOTERS;
-        
-        if(!defined("PAGE_ID"))
-        {
-            return $aReturnValues;
-        }
-        
+
         foreach($this->aModules as &$module)
         {
             $sTempPath = self::LEPTON_MODULE_DIR.$module."/footers.inc.php";
