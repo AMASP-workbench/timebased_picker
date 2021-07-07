@@ -43,7 +43,7 @@ class TimebasedPicker extends \LEPTON_abstract
 
         $sBasePath = LEPTON_PATH.'/modules/';
         
-		if(count($section) > 0)
+		if(!empty($section))
 		{
 			$old_section_id = $section_id;
 			$section_id = $section['section_id']; 
