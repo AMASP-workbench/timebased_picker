@@ -21,6 +21,9 @@ if(!defined('WB_PATH'))
 
 global $s_view;
 
+$database = LEPTON_database::getInstance();
+$section_id = LEPTON_core::getGlobal("section_id");
+
 $table_mod = TABLE_PREFIX.'mod_timebased_picker';
 
 $section_info = [];
@@ -33,7 +36,7 @@ $database->execute_query(
     false
 );
 
-if ( empty($section_info) || ($database->is_error()))
+if (empty($section_info) || ($database->is_error()))
 {
 	echo $database->get_error();
 	return 0;
@@ -60,7 +63,8 @@ if (!in_array($weekday, $allowed_days)) {
 	 *	next morning - but the sunday is not allowed - we still keep the flag active.
 	 *
 	 */
-	if ( $section_info['time_end'] <  $section_info['time_start'] ) {
+    if ($section_info['time_end'] < $section_info['time_start'])
+    {
 		// over midnight
 		if ($weekday == 0)
 		{
@@ -75,23 +79,24 @@ if (!in_array($weekday, $allowed_days)) {
 	}
 	
 } else {
-	if ( $section_info['time_end'] <  $section_info['time_start'] ) 
-	{
-		if ( ($time >= $section_info['time_end'] ) && ( $time < $section_info['time_start'] ) ) 
+    if ($section_info['time_end'] < $section_info['time_start'])
+    {
+        if (($time >= $section_info['time_end']) && ($time < $section_info['time_start']))
 		{
 		    $is_active = false;
 		}
 	} else {
-		if ( ($time < $section_info['time_start'] ) || ( $time >= $section_info['time_end'] ) )
+        if (($time < $section_info['time_start']) || ($time >= $section_info['time_end']))
 		{
 		    $is_active = false;
 		}
 	}
 }
 
-require_once __DIR__."/classes/TimebasedPicker.php";
+// require_once __DIR__."/classes/TimebasedPicker.php";
 
-if (!isset($s_view)) {
+if (!isset($s_view))
+{
 	$s_view = new \timebased_picker\classes\TimebasedPicker( $database );
 }
 

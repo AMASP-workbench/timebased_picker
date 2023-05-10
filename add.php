@@ -19,6 +19,16 @@ if(!defined('WB_PATH'))
     die();
 }
 
+//  L* 6 backward compatibility for WB modules
+if (class_exists("lib_comp", true))
+{
+    lib_comp::init("Timebased_picker");
+}
+
+$section_id = LEPTON_core::getGlobal("section_id");
+$page_id = LEPTON_core::getGlobal("page_id");
+$database = LEPTON_database::getInstance();
+
 $table = TABLE_PREFIX ."mod_timebased_picker";
 $database->query("INSERT INTO `".$table."` (`page_id`, `section_id`, `target_section_id`) VALUES ('".$page_id."','".$section_id."', '0')");
 

@@ -64,6 +64,8 @@ class TimebasedPicker extends \LEPTON_abstract
         global $TEXT;
         global $HEADING;
 
+        $section = [];
+        
         \LEPTON_database::getinstance()->execute_query(
             "SELECT `section_id`,`module` 
                 FROM `".TABLE_PREFIX."sections` 
