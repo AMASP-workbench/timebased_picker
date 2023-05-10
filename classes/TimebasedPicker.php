@@ -3,10 +3,10 @@
 /**
  *
  *  @category       modules
- *  @package        timebased_picker ( formerly: jmstv_picker )
- *  @author         Ruud Eisinga, Evaki, Dietrich Roland Pehlke (last)';
+ *  @package        timebased_picker (formerly: jmstv_picker)
+ *  @author         Ruud Eisinga, Evaki, Dietrich Roland Pehlke (last)'
  *  @license        http://www.gnu.org/licenses/gpl.html
- *  @requirements   PHP >= 7.3
+ *  @requirements   PHP >= 8.0
  *
  */
 
@@ -65,7 +65,7 @@ class TimebasedPicker extends \LEPTON_abstract
         global $HEADING;
 
         $section = [];
-        
+
         \LEPTON_database::getinstance()->execute_query(
             "SELECT `section_id`,`module` 
                 FROM `".TABLE_PREFIX."sections` 
