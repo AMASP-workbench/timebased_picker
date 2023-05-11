@@ -13,7 +13,7 @@
 /**
  *  prevent this file from being accessed directly
  */
-if(!defined('LEPTON_PATH'))
+if (!defined('LEPTON_PATH'))
 {
     header('Location: ../../index.php');
     die();
@@ -38,11 +38,11 @@ if (!function_exists("build_pagelist2")) {
             true
         );
 
-        foreach($query_section_id as $res)
+        foreach ($query_section_id as $res)
         {
             if ($res['page_id'] != $this_page)
             {
-                $links[$res['section_id']] = $res['section_id'].'|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section: '.$res['module']." :: ".$res['name'];
+                $links[$res['section_id']] = $res['section_id'].'|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section: '.$res['section_id']." ".$res['module']." :: ".$res['name'];
             } else {
                 $links[$res['section_id']] = '|'.str_repeat("  -  ",$res['level']).$res['page_title'].'    -    section:'.$res['module']." :: ".$res['name'];
             }

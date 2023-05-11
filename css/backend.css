@@ -27,7 +27,7 @@ select.timebased_picker {
 }
 
 .tbp:first-child {
-	margin-left: 0px;
+	margin-left: 0;
 }
 
 table.timebased_picker {

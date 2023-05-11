@@ -13,7 +13,7 @@
 /**
  *	prevent this file from being accessed directly
  */
-if(!defined('WB_PATH'))
+if (!defined('WB_PATH'))
 {
     header('Location: ../../index.php');
     die();
@@ -21,7 +21,12 @@ if(!defined('WB_PATH'))
 
 $MOD_TIMEBASED_PICKER = timebased_picker\classes\TimebasedPicker::getInstance()->language;
 
-require_once ('select_pages.php');
+$page_id = LEPTON_core::getGlobal("page_id");
+$section_id = LEPTON_core::getGlobal("section_id");
+$admin = LEPTON_core::getGlobal("admin");
+$TEXT = LEPTON_core::getGlobal("TEXT");
+
+require_once 'select_pages.php';
 
 $sql_row = [];
 LEPTON_database::getInstance()->execute_query(
@@ -38,11 +43,11 @@ $head_section_id = $sql_row['head_section_id'];
 $inactive_section_id =  $sql_row['inactive_section_id'];
 $weekdays = explode(",", $sql_row['weekdays']);
 
-$links = array();
+$links = [];
 build_pagelist2(
 	0,			// start
-	$page_id,	// currend page id
-	$links		// storrage - pass by reference
+	$page_id,	// current page id
+	$links		// storage - pass by reference
 );
 
 /**
@@ -60,8 +65,8 @@ $value_attrib = " value=\"";
 $t = range(1,24);
 $time_start_select = "\n\n<select name = 'time_start' id='time_start'>\n";
 $time_end_select = "\n\n<select name = 'time_end' id='time_end'>\n";
-foreach($t as $item) {
-	
+foreach ($t as $item)
+{
 	$s = ($item == $sql_row['time_start']) ? $sel : "";
 	$time_start_select .= $option_start.($item < 10 ? "0" : "").$item."' ".$s.">".$item.":00 ".$MOD_TIMEBASED_PICKER['TIME_HOUR_NAME'].$option_end;
 	
@@ -71,7 +76,7 @@ foreach($t as $item) {
 $time_start_select .= $select_end;
 $time_end_select .= $select_end;
 
-$timezones = array(
+$timezones = [
 	"Pacific/Kwajalein",
 	"Pacific/Samoa",
 	"Pacific/Honolulu",
@@ -102,7 +107,7 @@ $timezones = array(
 	"Pacific/Guam",
 	"Etc/GMT+10",
 	"Pacific/Fiji"
-);
+];
 
 $time_zone_select = "\n<select name='time_zone' id='time_zone'>\n";
 foreach($timezones as $item) {
@@ -137,7 +142,8 @@ $leptoken_tag = ($leptoken=== NULL)
 		<td>
 			<select name="target_section_id_<?php echo $section_id; ?>" class="timebased_picker" />
 				<option value="0"<?php echo $target_section_id=='0' ? $sel : '' ?>><?php echo $TEXT['PLEASE_SELECT']; ?></option>
-				<?php foreach($links as $li) {
+				<?php foreach ($links as $li)
+				{
 					$option_link = explode('|',$li);
 					$disabled = $option_link[0] ? '':$disabled_val;
 					echo $option_start2.$disabled.$value_attrib.$option_link[0]."\" ".($target_section_id==$option_link[0] ? $sel : '').">".$option_link[1].$option_end;
@@ -159,11 +165,12 @@ $leptoken_tag = ($leptoken=== NULL)
 	</tr>
 	<tr>
 		<td class="first"><?php echo $MOD_TIMEBASED_PICKER['WEEKDAYS']; ?></td>
-		<td><?php 
-		
-		for($i=1;$i<=6; $i++) {
-			echo "<input type='checkbox' name='weekdays[]' class='tbp' value='".$i."' ".(true === in_array( $i, $weekdays) ? "checked='checked'" : "")." /> ".$MOD_TIMEBASED_PICKER['WEEKDAYS_ABBR'][$i];
-		}
+		<td><?php
+
+			for ($i = 1; $i <= 6; $i++)
+			{
+				echo "<input type='checkbox' name='weekdays[]' class='tbp' value='" . $i . "' " . (true === in_array($i, $weekdays) ? "checked='checked'" : "") . " /> " . $MOD_TIMEBASED_PICKER['WEEKDAYS_ABBR'][$i];
+			}
 		echo "<input type='checkbox' name='weekdays[]' class='tbp' value='0' ".(true === in_array( '0', $weekdays) ? "checked='checked'" : "")." /> ".$MOD_TIMEBASED_PICKER['WEEKDAYS_ABBR'][0];
 		
 		?></td>
@@ -174,7 +181,8 @@ $leptoken_tag = ($leptoken=== NULL)
 		<td>
 			<select name="head_section_id_<?php echo $section_id; ?>" class="timebased_picker" />
 				<option value="0"<?php echo $head_section_id=='0' ? $sel : '' ?>><?php echo $TEXT['PLEASE_SELECT']; ?></option>
-				<?php foreach($links as $li) {
+				<?php foreach ($links as $li)
+				{
 					$option_link = explode('|',$li);
 					$disabled = $option_link[0] != ""  ? '' : $disabled_val;
 					echo $option_start2.$disabled.$value_attrib.$option_link[0]."\" ".($head_section_id==$option_link[0] ? $sel : '').">".$option_link[1].$option_end;
@@ -187,7 +195,9 @@ $leptoken_tag = ($leptoken=== NULL)
 		<td>
 			<select name="inactive_section_id_<?php echo $section_id; ?>" class="timebased_picker" />
 				<option value="0"<?php echo $inactive_section_id=='0' ? $sel : '' ?>><?php echo $TEXT['PLEASE_SELECT']; ?></option>
-				<?php foreach($links as $li) {
+				<?php
+				foreach ($links as $li)
+				{
 					$option_link = explode('|',$li);
 					$disabled = $option_link[0] ? '' : $disabled_val;
 					echo $option_start2.$disabled.$value_attrib.$option_link[0]."\" ".($inactive_section_id==$option_link[0] ? $sel : '').">".$option_link[1]."</option>\n";

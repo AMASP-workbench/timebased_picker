@@ -32,7 +32,7 @@ class TimebasedPicker extends \LEPTON_abstract
     /**
      *  Storage for the module-names (== directories)
      */
-    public $aModules = [];
+    public array $aModules = [];
        
     /**
      *  Own instance of this class
@@ -54,10 +54,9 @@ class TimebasedPicker extends \LEPTON_abstract
      *  @param int $aSection_id A valid section id. Pass|Call by reference!
      *
      */
-    public function print_section( int &$aSection_id=0 )
+    public function print_section(int &$aSection_id = 0): void
     {
         global $section_id;
-        global $page_id;
 
         global $database;
         global $wb;
@@ -77,7 +76,7 @@ class TimebasedPicker extends \LEPTON_abstract
 
         $sBasePath = self::LEPTON_MODULE_DIR;
 
-        if(!empty($section))
+        if (!empty($section))
         {
             $old_section_id = $section_id;
             $section_id = $section['section_id']; 
@@ -88,14 +87,12 @@ class TimebasedPicker extends \LEPTON_abstract
              *
              */
             $temp_path = $sBasePath.$module.'/frontend.css';
-            if (file_exists($temp_path)) {
+            if (file_exists($temp_path))
+            {
                 echo "\n\n<link rel=\"stylesheet\" type=\"text/css\" href='".$sBasePath.$module."/frontend.css' />\n";
             }
 
-            /**
-             *    Looking for frontend.js
-             *
-             */
+            // [1] Looking for frontend.js
             $temp_path = $sBasePath.$module.'/frontend.js';
             if (file_exists($temp_path)) {
                 echo "\n<script src=\"".$sBasePath.$module."/frontend.js\" type=\"text/javascript\"></script>\n";
@@ -157,22 +154,22 @@ class TimebasedPicker extends \LEPTON_abstract
         foreach($this->aModules as &$module)
         {
             $sTempPath = self::LEPTON_MODULE_DIR.$module."/headers.inc.php";
-            if(file_exists( $sTempPath ))
+            if (file_exists($sTempPath))
             {
                 $mod_headers = [];
                 require $sTempPath;
 
-                if(isset($mod_headers['frontend']['css']))
+                if (isset($mod_headers['frontend']['css']))
                 {
-                    foreach($mod_headers['frontend']['css'] as $aTemp)
+                    foreach ($mod_headers['frontend']['css'] as $aTemp)
                     {
                         $aReturnValues['frontend']['css'][] = $aTemp;
                     }
                 }
 
-                if(isset($mod_headers['frontend']['js']))
+                if (isset($mod_headers['frontend']['js']))
                 {
-                    foreach($mod_headers['frontend']['js'] as $aTemp)
+                    foreach ($mod_headers['frontend']['js'] as $aTemp)
                     {
                         $aReturnValues['frontend']['js'][] = $aTemp;
                     }
@@ -194,20 +191,20 @@ class TimebasedPicker extends \LEPTON_abstract
         
         $aReturnValues = self::FRONTEND_FOOTERS;
 
-        foreach($this->aModules as &$module)
+        foreach ($this->aModules as &$module)
         {
             $sTempPath = self::LEPTON_MODULE_DIR.$module."/footers.inc.php";
-            if(file_exists( $sTempPath ))
+            if (file_exists($sTempPath))
             {
                 $mod_footers = [];
 
                 require $sTempPath;
 
                 // Keep in mind that there are no css files resolved in footers!
-                
-                if(isset($mod_footers['frontend']['js']))
+
+                if (isset($mod_footers['frontend']['js']))
                 {
-                    foreach($mod_footers['frontend']['js'] as $aTemp)
+                    foreach ($mod_footers['frontend']['js'] as $aTemp)
                     {
                         $aReturnValues['frontend']['js'][] = $aTemp;
                     }
